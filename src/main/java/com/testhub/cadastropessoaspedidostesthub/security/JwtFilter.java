@@ -1,6 +1,5 @@
 package com.testhub.cadastropessoaspedidostesthub.security;
 
-
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -18,13 +17,16 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
 
-    public JwtFilter(JwtService jwtService) { this.jwtService = jwtService; }
+    public JwtFilter(JwtService jwtService) {
+        this.jwtService = jwtService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
             throws ServletException, IOException {
 
         String header = req.getHeader("Authorization");
+
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
             try {
@@ -34,11 +36,11 @@ public class JwtFilter extends OncePerRequestFilter {
                 var auth = new UsernamePasswordAuthenticationToken(
                         email, null, List.of(new SimpleGrantedAuthority("ROLE_" + role)));
                 SecurityContextHolder.getContext().setAuthentication(auth);
-            } catch (Exception ignored) {
-                SecurityContextHolder.clearContext();
+            } catch (Exception ex) {
+                SecurityContextHolder.clearContext(); // token inválido -> 401 padrão
             }
         }
+
         chain.doFilter(req, res);
     }
 }
-

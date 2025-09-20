@@ -20,6 +20,7 @@ public class JwtService {
     private long expirationMs;
 
     private Key key() {
+        // A chave precisa ter >= 32 caracteres (256 bits)
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -36,6 +37,9 @@ public class JwtService {
     }
 
     public Jws<Claims> parse(String token) {
-        return Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(token);
+        return Jwts.parserBuilder()
+                .setSigningKey(key())
+                .build()
+                .parseClaimsJws(token);
     }
 }
